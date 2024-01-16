@@ -36,12 +36,17 @@ require("lazy").setup({
     { 'williamboman/mason-lspconfig.nvim' },
 
     { 'VonHeikemen/lsp-zero.nvim',        branch = 'v3.x' },
-    { 'neovim/nvim-lspconfig' },
+    {
+        'neovim/nvim-lspconfig',
+        dependencies =
+        "jose-elias-alvarez/null-ls.nvim",
+
+    },
     { 'hrsh7th/cmp-nvim-lsp' },
     { 'hrsh7th/nvim-cmp' },
     { 'L3MON4D3/LuaSnip' },
-    { 'akinsho/bufferline.nvim',          version = "*",      dependencies = 'nvim-tree/nvim-web-devicons' },
-    { 'akinsho/git-conflict.nvim',        version = "*",      config = true },
+    { 'akinsho/bufferline.nvim',   version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    { 'akinsho/git-conflict.nvim', version = "*", config = true },
     {
         'akinsho/toggleterm.nvim',
         version = "*",
@@ -92,5 +97,36 @@ require("lazy").setup({
         "ThePrimeagen/harpoon",
         branch = "harpoon2",
         dependencies = { "nvim-lua/plenary.nvim" }
-    }
+    },
+    {
+        "numToStr/Comment.nvim",
+        keys = {
+            { "gcc", mode = "n",          desc = "Comment toggle current line" },
+            { "gc",  mode = { "n", "o" }, desc = "Comment toggle linewise" },
+            { "gc",  mode = "x",          desc = "Comment toggle linewise (visual)" },
+            { "gbc", mode = "n",          desc = "Comment toggle current block" },
+            { "gb",  mode = { "n", "o" }, desc = "Comment toggle blockwise" },
+            { "gb",  mode = "x",          desc = "Comment toggle blockwise (visual)" },
+        },
+        config = function(_, opts)
+            require("Comment").setup(opts)
+        end,
+    },
+    {
+        "dart-lang/dart-vim-plugin",
+    },
+    { "thosakwe/vim-flutter" },
+    { "natebosch/vim-lsc" },
+    { "natebosch/vim-lsc-dart" },
+    {
+        "akinsho/flutter-tools.nvim",
+        lazy = false,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "stevearc/dressing.nvim", -- optional for vim.ui.select
+        },
+        ft = { "dart" },
+        config = true,
+    },
+
 })
