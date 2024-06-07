@@ -31,7 +31,7 @@ require("lazy").setup({
 
     { "nvim-treesitter/nvim-treesitter",  build = ":TSUpdate" },
     { "mbbill/undotree" },
-    { "tpop/vim-fugitive" },
+    { "tpope/vim-fugitive" },
     { 'williamboman/mason.nvim' },
     { 'williamboman/mason-lspconfig.nvim' },
 
@@ -116,8 +116,6 @@ require("lazy").setup({
         "dart-lang/dart-vim-plugin",
     },
     { "thosakwe/vim-flutter" },
-    { "natebosch/vim-lsc" },
-    { "natebosch/vim-lsc-dart" },
     {
         "akinsho/flutter-tools.nvim",
         lazy = false,
@@ -129,4 +127,10 @@ require("lazy").setup({
         config = true,
     },
 
+    {
+        "simrat39/rust-tools.nvim",
+        ft = "rust",
+        dependencies = "neovim/nvim-lspconfig",
+    },
+    { 'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
 })

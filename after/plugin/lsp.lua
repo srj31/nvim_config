@@ -1,4 +1,27 @@
 local lsp_zero = require('lsp-zero')
+require 'lspconfig'.jedi_language_server.setup {}
+local lspconfig = require 'lspconfig'
+local configs = require 'lspconfig.configs'
+
+configs.solidity = {
+    default_config = {
+        cmd = { 'nomicfoundation-solidity-language-server', '--stdio' },
+        filetypes = { 'solidity' },
+        root_dir = lspconfig.util.find_git_ancestor,
+        single_file_support = true,
+    },
+}
+
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'sh',
+    callback = function()
+        vim.lsp.start({
+            name = 'bash-language-server',
+            cmd = { 'bash-language-server', 'start' },
+        })
+    end,
+})
+
 
 lsp_zero.on_attach(function(client, bufnr)
     local function opts(desc)
@@ -7,7 +30,7 @@ lsp_zero.on_attach(function(client, bufnr)
 
     vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts("Goto Definition"))
     vim.keymap.set("n", "gr", function() vim.lsp.buf.references() end, opts("Goto Reference"))
-    vim.keymap.set("n", "<leader>lf", vim.diagnostic.open_float, opts("Open Diagnostic"))
+    vim.keymap.set("n", "<leader>ds", vim.diagnostic.open_float, opts("Open Diagnostic"))
     vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts("Hover"))
     vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts("Goto Next Diagnostic"))
     vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts("Goto Prev Diagnostic"))
@@ -20,7 +43,7 @@ end
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    ensure_installed = { 'tsserver', 'rust_analyzer', 'ocamllsp' },
+    ensure_installed = { 'tsserver', 'rust_analyzer', 'ocamllsp', 'jedi_language_server' },
     handlers = {
         lsp_zero.default_setup,
         lua_ls = function()
@@ -29,6 +52,7 @@ require('mason-lspconfig').setup({
         end,
     }
 })
+
 
 local cmp = require('cmp')
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
