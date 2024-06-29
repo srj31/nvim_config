@@ -132,5 +132,10 @@ require("lazy").setup({
         ft = "rust",
         dependencies = "neovim/nvim-lspconfig",
     },
-    { 'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
+    { 'akinsho/bufferline.nvim', version = "*",                                                      dependencies = 'nvim-tree/nvim-web-devicons' },
+    { "rcarriga/nvim-dap-ui",    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
+    {
+        "Cliffback/netcoredbg-macOS-arm64.nvim",
+        dependencies = { "mfussenegger/nvim-dap" }
+    }
 })

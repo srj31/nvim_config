@@ -30,6 +30,7 @@ lsp_zero.on_attach(function(client, bufnr)
 
     vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts("Goto Definition"))
     vim.keymap.set("n", "gr", function() vim.lsp.buf.references() end, opts("Goto Reference"))
+    vim.keymap.set("n", "gi", function() vim.lsp.buf.Implementation() end, opts("Goto Implementation"))
     vim.keymap.set("n", "<leader>ds", vim.diagnostic.open_float, opts("Open Diagnostic"))
     vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts("Hover"))
     vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts("Goto Next Diagnostic"))
@@ -43,7 +44,7 @@ end
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    ensure_installed = { 'tsserver', 'rust_analyzer', 'ocamllsp', 'jedi_language_server' },
+    ensure_installed = { 'tsserver', 'rust_analyzer', 'ocamllsp', 'jedi_language_server', 'csharp_ls' },
     handlers = {
         lsp_zero.default_setup,
         lua_ls = function()
