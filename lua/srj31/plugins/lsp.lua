@@ -67,12 +67,16 @@ return {
         end,
       })
 
+      local lsp_servers = {
+        "lua_ls", "ocamllsp", "ts_ls", "pyright", "ruff",
+        "sqls", "marksman", "bashls", "clangd",
+      }
       require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls", "ocamllsp", "ts_ls", "pyright", "ruff",
-          "sqls", "marksman", "bashls", "clangd",
-        },
-        automatic_enable = true,
+        ensure_installed = lsp_servers,
+        -- Allowlist: only auto-enable these (NOT every installed mason server),
+        -- so rustaceanvim/haskell-tools/roslyn.nvim remain the sole owners of
+        -- rust_analyzer/hls/roslyn, and dropped servers can't be resurrected.
+        automatic_enable = lsp_servers,
       })
 
       require("mason-tool-installer").setup({
