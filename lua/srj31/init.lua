@@ -9,6 +9,7 @@ require("srj31.lazy")
 require("lazy").setup({
   spec = {
     { import = "srj31.plugins" },
+    { import = "srj31.plugins.lang" },
   },
   install = { colorscheme = { "catppuccin-mocha", "habamax" } },
   checker = { enabled = true, notify = false },
