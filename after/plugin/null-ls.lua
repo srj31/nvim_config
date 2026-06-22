@@ -3,12 +3,17 @@ local null_ls = require("null-ls")
 local formatting = null_ls.builtins.formatting
 local lint = null_ls.builtins.diagnostics
 
+require("mason-null-ls").setup({
+    ensure_installed = { "ruff" }
+})
+
+
 local sources = {
     formatting.prettier,
     formatting.ocamlformat,
-    formatting.black,
     formatting.shfmt,
-    lint.shellcheck,
+    formatting.fourmolu,
+    lint.shellcheck
 }
 
 null_ls.setup({
