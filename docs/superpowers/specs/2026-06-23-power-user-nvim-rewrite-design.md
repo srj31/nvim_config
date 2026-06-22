@@ -11,7 +11,10 @@ nvim-cmp, null-ls, rust-tools) into a clean **modular lazy.nvim** config with th
 that power-user setups have — while keeping it *the user's* config and preserving all
 existing muscle-memory keymaps. Also add a live theme switcher with several themes.
 
-Neovim version: 0.11.3 (modern `vim.lsp` / `vim.diagnostic` APIs available).
+Neovim version: **upgrade 0.11.3 -> 0.12.x stable** (`brew upgrade neovim`) as the first
+step. 0.12 is required by roslyn.nvim and unlocks the modern `vim.lsp.config()` /
+`vim.lsp.enable()` API (the current professional standard). All other chosen plugins
+support 0.12.
 
 ## Approach (decided in brainstorming)
 
@@ -21,6 +24,10 @@ Neovim version: 0.11.3 (modern `vim.lsp` / `vim.diagnostic` APIs available).
   Python (plus Lua for editing the config, C/C++ via clangd, Bash — already present).
 - **Languages dropped**: Scala/metals, Dart/Flutter, Solidity, Zig, F#.
 - **Completion**: blink.cmp + LuaSnip + friendly-snippets; keep Codeium inline AI.
+- **C#/.NET**: roslyn.nvim (seblyng/roslyn.nvim) replaces the discontinued OmniSharp —
+  the current professional standard; also handles Razor. Requires nvim 0.12.
+- **File explorer**: neo-tree.nvim replaces nvim-tree (popular professional choice;
+  flexible sidebar/float/git integration). Entry keymaps kept identical.
 
 ## Target structure
 
@@ -44,12 +51,12 @@ lua/srj31/
     ├── git.lua             gitsigns, fugitive, git-conflict
     ├── ui.lua              lualine, bufferline, indent-blankline, which-key,
     │                       trouble, fidget, dressing, alpha (dashboard), web-devicons
-    ├── navigation.lua      harpoon, nvim-tree, flash, tmux-navigator, undotree
+    ├── navigation.lua      harpoon, neo-tree, flash, tmux-navigator, undotree
     ├── terminal.lua        toggleterm
     ├── debugging.lua       nvim-dap, dap-ui, nvim-nio, mason-nvim-dap, netcoredbg
     └── lang/
         ├── rust.lua        rustaceanvim
-        ├── dotnet.lua      omnisharp-extended-lsp + netcoredbg config
+        ├── dotnet.lua      roslyn.nvim + netcoredbg config
         ├── haskell.lua     haskell-tools.nvim (hls, fourmolu)
         └── markdown.lua    render-markdown.nvim (+ marksman via lsp.lua)
 ```
@@ -67,10 +74,12 @@ alpha (dashboard), dressing (UI select/input).
 
 | Old | New | Why |
 |-----|-----|-----|
-| lsp-zero v3 | native mason + mason-lspconfig + lspconfig | lsp-zero winding down; 0.11 standard |
+| lsp-zero v3 | native mason + mason-lspconfig + `vim.lsp.config`/`vim.lsp.enable` | lsp-zero winding down; 0.12 standard |
 | nvim-cmp + cmp-* | blink.cmp + LuaSnip + friendly-snippets | user choice; modern/fast |
 | null-ls / none-ls | conform.nvim (format) + nvim-lint (lint) | none-ls deprecated |
 | rust-tools.nvim | rustaceanvim | rust-tools archived |
+| omnisharp + omnisharp-extended | roslyn.nvim | OmniSharp discontinued; roslyn is current standard |
+| nvim-tree | neo-tree.nvim | flexible, widely-used professional explorer |
 
 Formatters via conform: prettier (web/json/md/yaml), ocamlformat, shfmt (sh),
 fourmolu (haskell), ruff (python). Linters via nvim-lint: shellcheck (sh).
@@ -81,10 +90,14 @@ catppuccin (**default mocha**), tokyonight, kanagawa, rose-pine, gruvbox, nightf
 Switcher: themery.nvim, bound to `<leader>tt`, selection persists across restarts.
 Carry over the custom LineNr highlights from the old `colors.lua`.
 
-## LSP servers (ensure_installed)
+## LSP servers (mason / mason-lspconfig)
 
-lua_ls, rust_analyzer (via rustaceanvim, not the mason-lspconfig handler), omnisharp,
-ocamllsp, hls (via haskell-tools), ts_ls, pyright, ruff, sqls, marksman, bashls, clangd.
+lua_ls, rust_analyzer (driven by rustaceanvim), roslyn (C#, via roslyn.nvim — mason
+package `roslyn`), ocamllsp, hls (via haskell-tools), ts_ls, pyright, ruff, sqls,
+marksman, bashls, clangd. Configured with the 0.12 `vim.lsp.config()` + `vim.lsp.enable()`
+API; shared keymaps applied in an `LspAttach` autocmd so every server gets identical
+`gd`/`gr`/`gi`/`K`/etc. (roslyn needs no special `omnisharp_extended` shim — go-to
+works natively).
 
 ## Keymap preservation (must keep, exact)
 
@@ -95,8 +108,9 @@ Telescope: `<leader>ff`, `<leader>fb`, `<C-f>` git files, `<leader>fw` live-grep
 Harpoon: `<C-e>` (telescope UI), `<leader>a` add, `<C-S-P>`/`<C-S-N>` prev/next.
 LSP: `gd`, `gr`, `gi`, `K` hover, `<leader>ds`, `<leader>aa`/`ae`/`aw` qflist,
 `<leader>cl` codelens, `<leader>ca`, `<leader>rn`, `<C-h>` (insert) signature,
-`<leader>fm` format. omnisharp uses omnisharp_extended for `gd`/`gr`/`gi`.
-nvim-tree: `<C-n>` toggle, `<leader>e` focus.
+`<leader>fm` format. C# uses roslyn (native go-to; same `gd`/`gr`/`gi`).
+neo-tree: `<C-n>` toggle, `<leader>e` focus/reveal (entry keymaps kept identical to the
+old nvim-tree; in-tree edit keys are neo-tree defaults: `a` add, `d` delete, `r` rename).
 toggleterm: `<C-\>`.
 DAP: `<leader>dt` breakpoint, `<leader>dr` continue, `<leader>di`/`dv`/`do`/`db`
 step into/over/out/back, `<space>gb` run-to-cursor, `<space>?` eval.
@@ -126,6 +140,8 @@ trouble under `<leader>x`; flash via `s`/`S`. All grouped/labeled in which-key.
 
 ## Verification
 
-Headless load check (`nvim --headless "+Lazy! sync" +qa` then `nvim --headless +qa`) must
-produce no errors; lazy installs all plugins; `:checkhealth` clean enough; manual smoke
-test of theme switch, completion, LSP attach, format, and harpoon.
+Confirm `nvim --version` reports 0.12.x after the brew upgrade. Headless load check
+(`nvim --headless "+Lazy! sync" +qa` then `nvim --headless +qa`) must produce no errors;
+lazy installs all plugins; `:checkhealth` clean enough; manual smoke test of theme switch
+(`<leader>tt`), completion (blink), LSP attach (incl. roslyn on a .cs file), conform
+format, neo-tree (`<C-n>`), and harpoon.
