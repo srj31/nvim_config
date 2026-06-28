@@ -11,7 +11,7 @@ return {
         "c", "cpp", "lua", "vim", "vimdoc", "query", "bash",
         "javascript", "typescript", "tsx", "rust", "ocaml", "ocaml_interface",
         "haskell", "python", "sql", "markdown", "markdown_inline",
-        "c_sharp", "fsharp", "json", "yaml", "toml",
+        "c_sharp", "fsharp", "json", "yaml", "toml", "xml",
       }
       -- The main branch compiles parsers with the `tree-sitter` CLI, which must be
       -- on the system PATH (install it with `brew install tree-sitter`). Skip the

@@ -87,6 +87,7 @@ return {
 				"marksman",
 				"bashls",
 				"clangd",
+				"lemminx", -- XML language server (validation, completion, formatting)
 			}
 			require("mason-lspconfig").setup({
 				ensure_installed = lsp_servers,
