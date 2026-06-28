@@ -104,8 +104,10 @@ return {
 					"shfmt",
 					"ocamlformat",
 					"fourmolu",
-					"stylua", -- formatters
-					"shellcheck", -- linter
+					"stylua",
+					"sql-formatter", -- formatters
+					"shellcheck",
+					"dotenv-linter", -- linters
 					"netcoredbg",
 					"codelldb",
 					"debugpy", -- debuggers
