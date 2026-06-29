@@ -76,6 +76,26 @@ return {
 					client.server_capabilities.signatureHelpProvider = false
 				end,
 			})
+			-- fsautocomplete ships as a .NET 8 tool, so its MSBuild can't load
+			-- net10 projects -> project load errors and the server deadlocks.
+			-- Roll it forward onto the installed .NET 10 runtime to fix that.
+			-- It also emits VS Code `command:` hyperlinks in hover docs; rewrite
+			-- them to plain label text so they render readably, not as raw HTML.
+			local default_hover = vim.lsp.handlers["textDocument/hover"]
+			vim.lsp.config("fsautocomplete", {
+				cmd_env = { DOTNET_ROLL_FORWARD = "LatestMajor" },
+				handlers = {
+					["textDocument/hover"] = function(err, result, ctx, config)
+						local c = result and result.contents
+						if type(c) == "table" and type(c.value) == "string" then
+							c.value = c.value
+								:gsub("<a href=['\"]command:[^'\"]*['\"]>(.-)</a>", "%1")
+								:gsub("%[([^%]]*)%]%(command:[^%)]*%)", "%1")
+						end
+						return default_hover(err, result, ctx, config)
+					end,
+				},
+			})
 
 			local lsp_servers = {
 				"lua_ls",
@@ -88,6 +108,7 @@ return {
 				"bashls",
 				"clangd",
 				"lemminx", -- XML language server (validation, completion, formatting)
+				"fsautocomplete", -- F# language server (ionide/FsAutoComplete)
 			}
 			require("mason-lspconfig").setup({
 				ensure_installed = lsp_servers,
