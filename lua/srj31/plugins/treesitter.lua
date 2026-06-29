@@ -29,8 +29,17 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("srj31_ts_highlight", { clear = true }),
         callback = function(ev)
-          if pcall(vim.treesitter.start, ev.buf) then
-            -- experimental main-branch indent (replaces the old `indent` module)
+          if not pcall(vim.treesitter.start, ev.buf) then
+            return
+          end
+          -- Only enable the experimental main-branch indent for languages that
+          -- ship an `indents` query. Without one (e.g. fsharp) indentexpr returns
+          -- 0 for every line and dumps the cursor at column 0 on each newline;
+          -- leaving it unset lets the global `smartindent` keep the previous
+          -- line's indentation instead.
+          local parser = vim.treesitter.get_parser(ev.buf, nil, { error = false })
+          local lang = parser and parser:lang()
+          if lang and vim.treesitter.query.get(lang, "indents") then
             vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
