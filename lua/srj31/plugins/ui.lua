@@ -53,7 +53,13 @@ return {
       { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
     },
   },
-  { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+  {
+    "j-hui/fidget.nvim",
+    event = "LspAttach",
+    -- FSAC floods $/progress events during analysis; rendering each one bogs
+    -- Neovim's UI thread (the "hang"). Ignore fsautocomplete's progress.
+    opts = { progress = { ignore = { "fsautocomplete" } } },
+  },
   { "stevearc/dressing.nvim", event = "VeryLazy", opts = {} },
   {
     "goolord/alpha-nvim",
