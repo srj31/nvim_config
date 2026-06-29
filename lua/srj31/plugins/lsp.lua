@@ -61,6 +61,38 @@ return {
 					vim.keymap.set("n", "<leader>aw", function()
 						vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.WARN })
 					end, opts("All Warnings -> qflist"))
+
+					local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+					-- Auto-display codelens for servers that provide it (e.g. the F#
+					-- signature/inferred-type lenses). enable() attaches to the buffer
+					-- and re-renders on change, so no manual refresh autocmd is needed.
+					if client and client.server_capabilities.codeLensProvider then
+						vim.lsp.codelens.enable(true, { bufnr = event.buf })
+					end
+
+					-- Safety net: give F# buffers a one-key force-restart so any FSAC
+					-- hiccup doesn't need a full nvim restart -- kill the server and
+					-- re-attach a fresh one.
+					if vim.bo[event.buf].filetype == "fsharp" then
+						vim.keymap.set("n", "<leader>lr", function()
+							local clients = vim.lsp.get_clients({ name = "fsautocomplete" })
+							if #clients == 0 then
+								vim.notify("No fsautocomplete client attached", vim.log.levels.WARN)
+								return
+							end
+							for _, c in ipairs(clients) do
+								c:stop(true) -- force-kill the (possibly deadlocked) server
+							end
+							local buf = vim.api.nvim_get_current_buf()
+							vim.notify("Restarting fsautocomplete…", vim.log.levels.INFO)
+							vim.defer_fn(function()
+								if vim.api.nvim_buf_is_valid(buf) then
+									vim.api.nvim_exec_autocmds("FileType", { buffer = buf, modeline = false })
+								end
+							end, 1000)
+						end, opts("Restart F# LSP"))
+					end
 				end,
 			})
 
@@ -76,13 +108,22 @@ return {
 					client.server_capabilities.signatureHelpProvider = false
 				end,
 			})
-			-- fsautocomplete ships as a .NET 8 tool, so its MSBuild can't load
-			-- net10 projects -> project load errors and the server deadlocks.
-			-- Roll it forward onto the installed .NET 10 runtime to fix that.
-			-- It also emits VS Code `command:` hyperlinks in hover docs; rewrite
+			-- ROOT-CAUSE FIX for the F# "hang": nvim-lspconfig defaults FSAC to its
+			-- EXPERIMENTAL adaptive server (cmd flag `--adaptive-lsp-server-enabled`).
+			-- That server's FSharp.Data.Adaptive path deadlocks -- the main LSP thread
+			-- parks on Monitor.Wait at 0% CPU and the editor stalls within ~2 min, and
+			-- it also floods $/progress events. Override cmd to drop the flag so FSAC
+			-- runs its default/classic server, which loads the same net10 projects
+			-- without the deadlock (verified) and emits far fewer progress events.
+			--
+			-- cmd_env: FSAC ships as a .NET 8 tool; roll it forward onto the installed
+			-- .NET 10 runtime so its MSBuild can load the workspace's net10 projects.
+			--
+			-- handlers: FSAC emits VS Code `command:` hyperlinks in hover docs; rewrite
 			-- them to plain label text so they render readably, not as raw HTML.
 			local default_hover = vim.lsp.handlers["textDocument/hover"]
 			vim.lsp.config("fsautocomplete", {
+				cmd = { "fsautocomplete" },
 				cmd_env = { DOTNET_ROLL_FORWARD = "LatestMajor" },
 				handlers = {
 					["textDocument/hover"] = function(err, result, ctx, config)
