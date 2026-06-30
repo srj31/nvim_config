@@ -125,6 +125,14 @@ return {
 			vim.lsp.config("fsautocomplete", {
 				cmd = { "fsautocomplete" },
 				cmd_env = { DOTNET_ROLL_FORWARD = "LatestMajor" },
+				on_attach = function(client)
+					-- FSAC emits semantic tokens whose range can run past EOF. nvim
+					-- 0.12's tokens_to_ranges() has no end-of-buffer clamp, so it loops
+					-- line-by-line past the last line and spins at 100% CPU -- freezing
+					-- the whole editor (not just the LSP). Treesitter already highlights
+					-- F#, so drop FSAC's semantic tokens entirely.
+					client.server_capabilities.semanticTokensProvider = nil
+				end,
 				handlers = {
 					["textDocument/hover"] = function(err, result, ctx, config)
 						local c = result and result.contents
