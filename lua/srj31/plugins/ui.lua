@@ -37,7 +37,7 @@ return {
         { "<leader>d", group = "debug" },
         { "<leader>h", group = "git hunks" },
         { "<leader>x", group = "trouble" },
-        { "<leader>t", group = "theme/toggle" },
+        { "<leader>t", group = "test/theme" },
         { "<leader>g", group = "git" },
         { "<leader>c", group = "code" },
         { "<leader>l", group = "lsp" },
