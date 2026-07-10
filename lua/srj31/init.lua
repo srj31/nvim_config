@@ -2,6 +2,8 @@
 require("srj31.core.options")
 require("srj31.core.keymaps")
 require("srj31.core.autocmds")
+require("srj31.core.dotnet_test")
+require("srj31.core.dotnet_newfile")
 
 -- Bootstrap lazy.nvim (prepends lazypath to rtp)
 require("srj31.lazy")
