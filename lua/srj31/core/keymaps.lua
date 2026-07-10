@@ -11,8 +11,8 @@ vim.keymap.set("n", "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 vim.keymap.set("v", "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
-vim.keymap.set("n", "<leader>d", [["_d]], { desc = "Delete to black hole" })
-vim.keymap.set("v", "<leader>d", [["_d]], { desc = "Delete to black hole" })
+vim.keymap.set("n", "<leader>D", [["_d]], { desc = "Delete to black hole" })
+vim.keymap.set("v", "<leader>D", [["_d]], { desc = "Delete to black hole" })
 
 vim.keymap.set("n", "<leader>{", "^dt{d%", { desc = "Delete to/incl brace block" })
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Escape insert mode" })

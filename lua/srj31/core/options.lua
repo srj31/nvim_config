@@ -28,3 +28,6 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
+
+-- Resolve multi-key mappings / show which-key faster (default 1000ms).
+vim.opt.timeoutlen = 300
