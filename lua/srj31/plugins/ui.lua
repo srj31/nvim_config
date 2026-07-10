@@ -54,7 +54,13 @@ return {
       { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix (Trouble)" },
     },
   },
-  { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+  {
+    "j-hui/fidget.nvim",
+    event = "LspAttach",
+    -- FSAC streams project-load/typecheck progress; hide it from the fidget
+    -- notifications so it doesn't clutter the screen.
+    opts = { progress = { ignore = { "fsautocomplete" } } },
+  },
   { "stevearc/dressing.nvim", event = "VeryLazy", opts = {} },
   {
     "goolord/alpha-nvim",
