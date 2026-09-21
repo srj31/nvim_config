@@ -11,7 +11,7 @@ init.lua                      -- entry point
 lua/srj31/
 ├── core/                     -- options, keymaps, base settings
 └── plugins/                  -- one file per plugin group
-    └── lang/                 -- language-specific setups (rust, haskell, dotnet, markdown)
+    └── lang/                 -- language-specific setups (rust, haskell, dotnet, markdown, lean)
 ```
 
 ---
@@ -28,6 +28,7 @@ lua/srj31/
 | `Exafunction/codeium.vim` | Free AI inline code completion (Copilot alternative). |
 | `tpope/vim-sleuth` | Auto-detects indentation (tabs vs spaces, width) per file. |
 | `windwp/nvim-ts-autotag` | Auto-closes and renames HTML/JSX tags via Treesitter. |
+| `coder/claudecode.nvim` | Runs the Claude Code CLI in a split, wired to the editor (selection context, native diffs). |
 
 ### Navigation & Search
 | Plugin | What it does |
@@ -110,6 +111,7 @@ lua/srj31/
 | `mrcjkb/haskell-tools.nvim` | Haskell LSP and tooling integration. |
 | `seblyng/roslyn.nvim` | C#/.NET LSP via Roslyn. |
 | `MeanderingProgrammer/render-markdown.nvim` | Renders Markdown (headings, code, tables) in-buffer. |
+| `Julian/lean.nvim` | Lean 4 support: infoview, goal state, unicode abbreviations. |
 
 ### Colorschemes
 All are theme-only and selectable through the picker (`<leader>tt`, powered by
@@ -137,7 +139,7 @@ Leader = `<Space>`.
 | `<leader>fw` | Live grep |
 | `<leader>fr` | Project search & replace (grug-far) |
 | `s` / `S` | Flash jump / Flash Treesitter |
-| `<C-h/j/k/l>` | Move between splits / tmux panes |
+| `<C-h/j/k/l>` | Move between splits / tmux panes (also from terminal mode) |
 
 ### Harpoon
 | Key | Action |
@@ -180,6 +182,44 @@ Leader = `<Space>`.
 | `<leader>dR` | Restart |
 | `<leader>gb` | Run to cursor |
 | `<leader>?` | Eval under cursor |
+
+### Claude Code
+| Key | Action |
+|-----|--------|
+| `<leader>kc` | Toggle the Claude split |
+| `<leader>kf` | Focus the Claude split |
+| `<leader>kr` / `<leader>kn` | Resume a session / continue the last one |
+| `<leader>km` | Select model |
+| `<leader>kb` | Add the current buffer to context |
+| `<leader>ks` | Send the visual selection (or the file under the cursor in neo-tree) |
+| `<leader>ka` / `<leader>kd` | Accept / deny the proposed diff |
+| `<leader>kx` | Connection status |
+
+Because `<C-h/j/k/l>` now move out of terminal splits, the Claude CLI itself no
+longer receives them — that costs its `<C-k>`/`<C-l>` line-edit and clear-screen
+bindings inside the split. Everything else (including `<C-c>`, `<C-r>` and the
+arrow keys) is unaffected.
+
+### Lean 4
+Buffer-local in `.lean` files, under `<LocalLeader>` (= `<Space>`):
+
+| Key | Action |
+|-----|--------|
+| `<leader>i` | Toggle the infoview |
+| `<leader><Tab>` | Jump to the infoview |
+| `<leader>x` / `<leader>c` | Add / clear infoview pins |
+| `<leader>p` | Pause infoview pins |
+| `<leader>dd` / `<leader>dt` | Toggle auto-diff mode (keeping / clearing pins) |
+| `<leader>dx` / `<leader>dc` | Set / clear a diff pin |
+| `<leader>w` / `<leader>W` | Enable / disable infoview widgets |
+| `<leader>v` | Change infoview view options |
+| `<leader>s` | Accept the first infoview suggestion |
+| `<leader>r` | Restart the Lean server for this file |
+| `<leader>\` | Show how to type the unicode character under the cursor |
+| `K` | Interactive hover |
+
+Inside `.lean` buffers these shadow the global `<leader>p`, `<leader>s` and
+`<leader>dt`. Needs `lean`/`lake` on `PATH` (install [elan](https://github.com/leanprover/elan)).
 
 ### Sessions / Misc
 | Key | Action |
