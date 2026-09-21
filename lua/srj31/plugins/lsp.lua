@@ -37,7 +37,7 @@ return {
 				group = vim.api.nvim_create_augroup("srj31_lsp_attach", { clear = true }),
 				callback = function(event)
 					local function opts(desc)
-						return { buffer = event.buf, desc = desc, silent = true, noremap = true }
+						return { buffer = event.buf, desc = desc, silent = true, noremap = true, nowait = true }
 					end
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Goto Definition"))
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("Goto References"))
