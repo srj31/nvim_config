@@ -41,6 +41,7 @@ return {
         { "<leader>g", group = "git" },
         { "<leader>c", group = "code" },
         { "<leader>l", group = "lsp" },
+        { "<leader>k", group = "claude" },
       },
     },
   },

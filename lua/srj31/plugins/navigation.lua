@@ -104,6 +104,16 @@ return {
 			map("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Tmux nav down" })
 			map("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Tmux nav up" })
 			map("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Tmux nav right" })
+
+			-- Same keys from terminal mode (claude/lazygit splits). <C-\><C-n> is the
+			-- only key nvim intercepts in terminal mode; everything else goes to the
+			-- job, so without these the Claude split traps focus until the CLI exits.
+			-- Cost: the shell/TUI no longer sees <C-h/j/k/l> (see README for what that
+			-- takes away from Claude Code).
+			map("t", "<C-h>", "<C-\\><C-n><cmd>TmuxNavigateLeft<cr>", { desc = "Tmux nav left" })
+			map("t", "<C-j>", "<C-\\><C-n><cmd>TmuxNavigateDown<cr>", { desc = "Tmux nav down" })
+			map("t", "<C-k>", "<C-\\><C-n><cmd>TmuxNavigateUp<cr>", { desc = "Tmux nav up" })
+			map("t", "<C-l>", "<C-\\><C-n><cmd>TmuxNavigateRight<cr>", { desc = "Tmux nav right" })
 		end,
 	},
 }
