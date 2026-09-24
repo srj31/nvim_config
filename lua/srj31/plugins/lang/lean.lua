@@ -13,6 +13,19 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     init = function()
+      -- elan installs `lake`/`lean` into ~/.elan/bin and puts that on PATH from
+      -- .zprofile -- a *login* shell file. A GUI-launched nvim (`nvim --embed`)
+      -- never sources it, and `launchctl getenv PATH` is unset, so it inherits
+      -- the bare /usr/bin:/bin:/usr/sbin:/sbin. leanls' cmd is plain `lake`, so
+      -- the spawn fails with "missing from PATH", no client ever attaches, and
+      -- lean.nvim's infoview sits on "Processing file..." forever (progress.at
+      -- reports `processing` whenever it has no fileProgress for the file yet,
+      -- which is indistinguishable from "the server never started").
+      local elan = vim.fs.normalize '~/.elan/bin'
+      if vim.fn.isdirectory(elan) == 1 and not (':' .. vim.env.PATH .. ':'):find(':' .. elan .. ':', 1, true) then
+        vim.env.PATH = elan .. ':' .. vim.env.PATH
+      end
+
       -- Has to be set before the plugin loads: ftplugin/lean/lean.lua reads it
       -- at FileType time. (`require("lean").setup()` is deprecated upstream in
       -- favour of this variable, and nothing else is needed to activate it.)
